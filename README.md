@@ -1,3 +1,3 @@
-# Automate Terraform with GitHub Actions
+# FediServices.nz AWS Infra
 
-This repo is a companion repo to the [Automate Terraform with GitHub Actions tutorial](https://developer.hashicorp.com/terraform/tutorials/automation/github-actions).
+This repo contains the code required to deploy status.fediservices.nz onto an EC2 instance with an EIP.
