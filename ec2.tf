@@ -3,7 +3,7 @@
 resource "aws_instance" "instance" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  iam_instance_profile    = aws_iam_instance_profile.profile.name
+  iam_instance_profile   = aws_iam_instance_profile.profile.name
   availability_zone      = element(aws_subnet.subnet.*.availability_zone, 1)
   user_data              = data.template_file.userdata.rendered
   subnet_id              = element(aws_subnet.subnet.*.id, 1)

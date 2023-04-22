@@ -25,10 +25,10 @@ resource "aws_iam_instance_profile" "profile" {
 }
 
 resource "aws_iam_role_policy" "policy" {
-name = aws_iam_role.role.name
-role = aws_iam_role.role.id
+  name = aws_iam_role.role.name
+  role = aws_iam_role.role.id
 
-policy = <<EOF
+  policy = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
