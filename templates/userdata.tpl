@@ -25,6 +25,10 @@ ACC_ID=$(echo $METADATA | jq -r .accountId)
 device="xvdf"
 volume="${volume}"
 
+# Terminate any server that already has the volume for this AZ attached
+aws ec2 terminate-instances --region ${region} --instance $(aws ec2 describe-volumes --region ${region} --volume-id $volume --query 'Volumes[0].Attachments[0].InstanceId' | tr -d '"') || true
+
+# Attach and Mount Volume
 while [[ $(aws ec2 detach-volume --volume-id=$volume --region=${region}) == *"detaching"* ]]; do sleep 1; done;
 while [[ $(aws ec2 attach-volume --volume-id=$volume --instance-id=$(cat /etc/amazon-ec2/instance-id) --device=$device --region=${region}) == *"attaching"* ]]; do sleep 1; done;
 
