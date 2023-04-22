@@ -1,7 +1,7 @@
 # Security groups to access database1.apse2
 resource "aws_security_group" "sg" {
-  name        = "status.fediservices.nz"
-  description = "status.fediservices.nz"
+  name        = var.domain
+  description = var.domain
 
   vpc_id = aws_vpc.vpc.id
 }

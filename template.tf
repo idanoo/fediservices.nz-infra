@@ -6,5 +6,6 @@ data "template_file" "userdata" {
     region    = data.aws_region.current.name
     data_root = "/data"
     volume    = aws_ebs_volume.ebs.id
+    domain    = var.domain
   }
 }

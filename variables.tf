@@ -8,5 +8,10 @@ variable "instance_type" {
   default = "t4g.nano"
 }
 
+variable "domain" {
+  type    = string
+  default = "status.fediservices.nz"
+}
+
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}

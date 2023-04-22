@@ -58,11 +58,34 @@ sudo resize2fs /dev/$device
 sudo chown ubuntu:ubuntu -R ${data_root}
 
 # Run it!
-docker run -d \
-  --restart=always \
-  -p 3001:3001 \
-  -v ${data_root}/uptime-kuma:/app/data \
-  --name uptime-kuma \
-  louislam/uptime-kuma
+cat <<EOF > docker-compose.yml
+version: '3'
+networks:
+  default:  
+    name: 'proxy_network'
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    volumes:  
+      - ${data_root}/uptime-kuma:/app/data
+    labels:   
+      caddy: ${domain}
+      caddy.reverse_proxy: "* {{ '{{upstreams 3001}}'}}"
+  caddy:
+    image: "lucaslorentz/caddy-docker-proxy:ci-alpine"
+    ports:    
+      - "80:80" 
+      - "443:443"
+    volumes:  
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${data_root}/caddy_data:/data
+    restart: unless-stopped
+    environment:
+      - CADDY_INGRESS_NETWORKS=proxy_network
+
+EOF
+
+docker compose up -d
 
 sudo snap start amazon-ssm-agent
