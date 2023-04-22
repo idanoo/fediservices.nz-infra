@@ -10,14 +10,13 @@ resource "aws_instance" "instance" {
   key_name               = var.ssh_key
   vpc_security_group_ids = [aws_security_group.sg.id]
 
-  tags = {Name = "status.fediservices.nz"}
+  tags = { Name = "status.fediservices.nz" }
 
   lifecycle {
     ignore_changes = [
       tags,
     ]
   }
-
 }
 
 # Elastic IP
@@ -25,7 +24,7 @@ resource "aws_eip" "eip" {
   instance = aws_instance.instance.id
   vpc      = true
 
-  tags {Name = "status.fediservices.nz"}
+  tags { Name = "status.fediservices.nz" }
 }
 
 # EBS Vol for persistance
