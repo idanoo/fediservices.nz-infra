@@ -25,6 +25,9 @@ ACC_ID=$(echo $METADATA | jq -r .accountId)
 device="xvdf"
 volume="${volume}"
 
+while [[ $(aws ec2 detach-volume --volume-id=$volume --region=${region}) == *"detaching"* ]]; do sleep 1; done;
+while [[ $(aws ec2 attach-volume --volume-id=$volume --instance-id=$(cat /etc/amazon-ec2/instance-id) --device=$device --region=${region}) == *"attaching"* ]]; do sleep 1; done;
+
 # Detect if volume is attached
 while [[ ! $(/bin/lsblk) == *$device* ]]; do
     # Detect if we are on a Nitro based VM and then lookup nvme device
