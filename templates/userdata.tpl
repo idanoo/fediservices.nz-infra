@@ -7,6 +7,13 @@ sudo apt update -q
 sudo apt install -qy jq unzip htop net-tools
 sudo apt -y upgrade
 
+# Add some beautiful swap
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+
 # Install awscli
 curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -58,34 +65,33 @@ sudo resize2fs /dev/$device
 sudo chown ubuntu:ubuntu -R ${data_root}
 
 # Run it!
-cat <<EOF > docker-compose.yml
-version: '3'
-networks:
-  default:  
-    name: 'proxy_network'
+cat <<EOF > /root/docker-compose.yml
+version: '3.3'
+
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:1
-    restart: unless-stopped
-    volumes:  
+    container_name: uptime-kuma
+    restart: always
+    volumes:
       - ${data_root}/uptime-kuma:/app/data
-    labels:   
-      caddy: ${domain}
-      caddy.reverse_proxy: "* {{ '{{upstreams 3001}}'}}"
+    ports:
+      - 3001:3001
   caddy:
-    image: "lucaslorentz/caddy-docker-proxy:ci-alpine"
-    ports:    
-      - "80:80" 
-      - "443:443"
-    volumes:  
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${data_root}/caddy_data:/data
+    image: caddy
+    container_name: caddy
     restart: unless-stopped
-    environment:
-      - CADDY_INGRESS_NETWORKS=proxy_network
+    command: caddy reverse-proxy --from https://${domain} --to http://uptime-kuma:3001
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ${data_root}/caddy:/data
+    depends_on:
+      - uptime-kuma
 
 EOF
 
-docker compose up -d
+cd /root && docker compose up -d
 
 sudo snap start amazon-ssm-agent
