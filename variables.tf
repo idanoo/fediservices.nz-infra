@@ -5,7 +5,7 @@ variable "ssh_key" {
 
 variable "instance_type" {
   type    = string
-  default = "t4g.nano"
+  default = "t4g.micro"
 }
 
 variable "domain" {
